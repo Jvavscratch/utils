@@ -1,0 +1,21 @@
+{
+  "name": "@jvavscratch/utils",
+  "version": "1.0.0",
+  "description": "Jvavscratch 工具函数库",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@jvavscratch/core": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
