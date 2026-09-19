@@ -1,21 +1,20 @@
-﻿/*******************************************************************
+/*******************************************************************
 * Copyright         : 2024 saaawdust
 * File Name         : build-util.ts
-*
 * Description       : Util for compilation
-*                    
-* Revision History  :
-* Date		Author 			Comments
-* ------------------------------------------------------------------
-* 14/09/2024	saaawdust	None
 *
+* Revision History  :
+* Date        Author          Comments
+* ------------------------------------------------------------------
+* 10/12/2025  NeuronPulse     Modified
 /******************************************************************/
 
 import { basename, dirname, join, parse } from "path";
-import { Costume, Sound, Sprite } from "./types";
+import { Costume, Sound, Sprite } from "@jvavscratch/types";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmdirSync, statSync, unlinkSync } from "fs";
-import { includes, uuid } from "./scratch-uuid";
-import { execSync } from "child_process";
+import { includes, uuid } from "@jvavscratch/types";
+import { getBuildScratchDir } from "@jvavscratch/core";
+const AdmZip = require("adm-zip");
 
 export function createCostume({
     name = "default",
@@ -36,13 +35,13 @@ export function createCostume({
     }
 
     const { ext, base } = parse(path);
-    const newFilePath = join(__dirname, '../tmp/temp_project', base);
+    const newFilePath = join(getBuildScratchDir(), "tmp", "temp_project", base);
 
     copyFileSync(path, newFilePath);
 
     const uuidName = uuid(includes.scratch_alphanumeric);
     const uuidFullName = `${uuidName}${ext}`;
-    const newFilePathWithUUID = join(__dirname, '../tmp/temp_project', uuidFullName);
+    const newFilePathWithUUID = join(getBuildScratchDir(), "tmp", "temp_project", uuidFullName);
 
     renameSync(newFilePath, newFilePathWithUUID);
 
@@ -66,13 +65,13 @@ export function createSound({
     }
 
     const { ext, base } = parse(path);
-    const newFilePath = join(__dirname, '../tmp/temp_project', base);
+    const newFilePath = join(getBuildScratchDir(), "tmp", "temp_project", base);
 
     copyFileSync(path, newFilePath);
 
     const uuidName = uuid(includes.scratch_alphanumeric);
     const uuidFullName = `${uuidName}${ext}`;
-    const newFilePathWithUUID = join(__dirname, '../tmp/temp_project', uuidFullName);
+    const newFilePathWithUUID = join(getBuildScratchDir(), "tmp", "temp_project", uuidFullName);
 
     renameSync(newFilePath, newFilePathWithUUID);
 
@@ -108,11 +107,11 @@ export function createSprite({
     if (costumes.length == 0) {
         if (isStage) {
             costumes.push(createCostume({
-                path: join(__dirname, "svg", "background.svg")
+                path: join(__dirname, "../../assets", "background.svg")
             }));
         } else {
             costumes.push(createCostume({ 
-                path: join(__dirname, "svg", "default.svg")
+                path: join(__dirname, "../../assets", "default.svg")
             }));
         }
     }
@@ -145,15 +144,39 @@ export function createSprite({
 export function zipFolderToSb3(folderPath: string) {
     const folderName = basename(folderPath);
     const folderDir = dirname(folderPath);
-    const outputZip = join(folderDir, `${folderName}.zip`);
     const outputSb3 = join(folderDir, `${folderName}.sb3`);
 
-    // We can also use `tar -cvf "${outputTar}" -C "${folderPath}" .`
-    const command = `powershell -Command "Get-ChildItem -Path '${folderPath}' | Compress-Archive -DestinationPath '${outputZip}'"`;
-
-    // It shows this giant ugly thing lol
-    execSync(command);
-    renameSync(outputZip, outputSb3);
+    try {
+        // 使用adm-zip创建ZIP文件
+        const zip = new AdmZip();
+        
+        // 递归添加文件夹中的所有文件
+        function addFolderToZip(folderPath: string, zipPath: string = '') {
+            const items = readdirSync(folderPath);
+            
+            for (const item of items) {
+                const itemPath = join(folderPath, item);
+                const itemZipPath = zipPath ? join(zipPath, item) : item;
+                const stat = statSync(itemPath);
+                
+                if (stat.isDirectory()) {
+                    // 递归处理子目录
+                    addFolderToZip(itemPath, itemZipPath);
+                } else {
+                    // 添加文件到ZIP
+                    zip.addLocalFile(itemPath, zipPath);
+                }
+            }
+        }
+        
+        addFolderToZip(folderPath);
+        
+        // 写入ZIP文件（直接保存为.sb3）
+        zip.writeZip(outputSb3);
+        
+    } catch (error) {
+        throw new Error(`创建SB3文件失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
 }
 
 /**
@@ -191,6 +214,10 @@ export function cloneFolderSync(source: string, destination: string): void {
  * @param dirPath The path to the directory to clean.
  */
 export function deleteAllContents(dirPath: string): void {
+    if (!existsSync(dirPath)) {
+        return; // Directory doesn't exist, nothing to delete
+    }
+    
     const files = readdirSync(dirPath);
 
     files.forEach((file) => {

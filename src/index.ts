@@ -1,9 +1,4 @@
-// 导出utils模块的所有功能
-export * from './util/blocks';
+// jvavscratch 通用工具：项目打包、文件缓冲、运行时包构造辅助
 export * from './util/build-util';
-export * from './util/decompile-util';
-export * from './util/err';
-export * from './util/evaluate';
 export * from './util/fs';
 export * from './util/lib-convert';
-export * from './util/scratch-uuid';

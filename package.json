@@ -1,21 +1,42 @@
 {
   "name": "@jvavscratch/utils",
   "version": "1.0.0",
-  "description": "Jvavscratch 工具函数库",
+  "description": "Jvavscratch 工具函数库：项目打包、文件缓冲、运行时包构造辅助",
+  "license": "MPL-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./util": {
+      "types": "./dist/util/index.d.ts",
+      "require": "./dist/util/index.js",
+      "import": "./dist/util/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "assets",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "dev": "tsc -w",
+    "prepare": "tsc"
   },
   "dependencies": {
-    "@jvavscratch/core": "^1.0.3"
+    "@babel/types": "^7.23.6",
+    "@jvavscratch/core": "github:Jvavscratch/core",
+    "@jvavscratch/types": "github:Jvavscratch/types",
+    "adm-zip": "^0.5.10"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@types/adm-zip": "^0.5.5",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
   }
 }

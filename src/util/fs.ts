@@ -1,12 +1,12 @@
-﻿/*******************************************************************
+/*******************************************************************
 * Copyright         : 2024 saaawdust
 * File Name         : fs.ts
 * Description       : FS-Util
-*                    
+*
 * Revision History  :
-* Date		Author 			Comments
+* Date        Author          Comments
 * ------------------------------------------------------------------
-\n* 11/27/2025\tNeuronPulse\tModified\n* *
+* 10/12/2025  NeuronPulse     Modified
 /******************************************************************/
 
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
@@ -47,7 +47,7 @@ export class DirectoryBuffer {
 
         existsSync(dirPath) && rmSync(dirPath, { recursive: true });
 
-        mkdirSync(dirPath);
+        mkdirSync(dirPath, { recursive: true });
 
         for (let i = 0; i < this.Content.length; i++) {
             let object = this.Content[i];

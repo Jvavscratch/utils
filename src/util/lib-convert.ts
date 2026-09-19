@@ -1,20 +1,20 @@
-﻿/*******************************************************************
+/*******************************************************************
 * Copyright         : 2024 saaawdust
-* File Name         : fs.ts
+* File Name         : lib-convert.ts
 * Description       : Library used for runtime-packages
-*                    
+*
 * Revision History  :
-* Date		Author 			Comments
+* Date        Author          Comments
 * ------------------------------------------------------------------
-\n* 11/27/2025\tNeuronPulse\tModified\n* *
+* 10/12/2025  NeuronPulse     Modified
 /******************************************************************/
 
 import { Block, CallExpression } from "@babel/types";
-import { BlockCluster } from "./blocks";
-import { Error } from "./err";
-import { evaluate } from "./evaluate";
-import { buildData, typeData, BlockOpCode } from "./types";
-import { createBlock } from "./blocks";
+import { BlockCluster } from "@jvavscratch/core";
+import { JvavscratchError } from "@jvavscratch/core";
+import { evaluate } from "@jvavscratch/core";
+import { buildData, typeData, BlockOpCode } from "@jvavscratch/types";
+import { createBlock } from "@jvavscratch/core";
 
 export interface BlockClustering {
     blocks: { any: Block };
@@ -48,7 +48,7 @@ export function createFunction<t = void>(
 
     return ((callExpression: CallExpression, blockCluster: BlockClustering, parentID: string, buildData: buildData) => {
         if (callExpression.arguments.length < (data as any).minimumArguments) {
-            new Error(
+            new JvavscratchError(
                 "Not enough arguments", 
                 buildData.originalSource, 
                 [{ line: callExpression.loc?.start.line || 1, column: callExpression.loc?.start.column || 1, length: (callExpression.loc?.end.column || 1) - (callExpression.loc?.start.column || 1) }], 
@@ -57,7 +57,7 @@ export function createFunction<t = void>(
         }
 
         if (callExpression.arguments.length > (data as any).maximumArguments) {
-            new Error(
+            new JvavscratchError(
                 "Too many arguments", 
                 buildData.originalSource, 
                 [{ line: callExpression.loc?.start.line || 1, column: callExpression.loc?.start.column || 1, length: (callExpression.loc?.end.column || 1) - (callExpression.loc?.start.column || 1) }], 
@@ -76,7 +76,7 @@ export function createFunction<t = void>(
                     evaluate(type, blockCluster as any, callExpression.arguments[i], parentID, buildData)
                 );
             } else if (data.argTypes && data.argTypes[i] && data.argTypes[i] != type) {
-                new Error(
+                new JvavscratchError(
                     `Expected '${data.argTypes[i]}' for argument '${i + 1}', got: '${type}'`, 
                     buildData.originalSource, 
                     [{ line: callExpression.loc?.start.line || 1, column: callExpression.loc?.start.column || 1, length: (callExpression.loc?.end.column || 1) - (callExpression.loc?.start.column || 1) }],
