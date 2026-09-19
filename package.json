@@ -1,7 +1,7 @@
 {
   "name": "@jvavscratch/utils",
   "version": "1.0.0",
-  "description": "Jvavscratch 工具函数库：项目打包、文件缓冲、运行时包构造辅助",
+  "description": "Utility library for jvavscratch: project packaging, file buffers, and package-authoring helpers",
   "license": "MPL-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

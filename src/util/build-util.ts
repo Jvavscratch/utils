@@ -147,10 +147,10 @@ export function zipFolderToSb3(folderPath: string) {
     const outputSb3 = join(folderDir, `${folderName}.sb3`);
 
     try {
-        // 使用adm-zip创建ZIP文件
+        // Build the archive with adm-zip
         const zip = new AdmZip();
         
-        // 递归添加文件夹中的所有文件
+        // Recursively add every file under the folder
         function addFolderToZip(folderPath: string, zipPath: string = '') {
             const items = readdirSync(folderPath);
             
@@ -160,10 +160,10 @@ export function zipFolderToSb3(folderPath: string) {
                 const stat = statSync(itemPath);
                 
                 if (stat.isDirectory()) {
-                    // 递归处理子目录
+                    // Recurse into subdirectories
                     addFolderToZip(itemPath, itemZipPath);
                 } else {
-                    // 添加文件到ZIP
+                    // Add the file to the archive
                     zip.addLocalFile(itemPath, zipPath);
                 }
             }
@@ -171,11 +171,11 @@ export function zipFolderToSb3(folderPath: string) {
         
         addFolderToZip(folderPath);
         
-        // 写入ZIP文件（直接保存为.sb3）
+        // Write the archive out (saved directly as .sb3)
         zip.writeZip(outputSb3);
         
     } catch (error) {
-        throw new Error(`创建SB3文件失败: ${error instanceof Error ? error.message : '未知错误'}`);
+        throw new Error(`Failed to create SB3 file: ${error instanceof Error ? error.message : 'unknown error'}`);
     }
 }
 
